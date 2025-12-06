@@ -55,11 +55,11 @@ This web application targets a clothing retail franchise. A franchise manager ca
 
 ## 👨‍💻 Team
 
-### Ahmed Khaled  
-[![GitHub](https://img.shields.io/badge/GitHub-Profile-blue?logo=github)](https://github.com/AhmedMekheimer)
-
 ### Mohamed Saeed  
 [![GitHub](https://img.shields.io/badge/GitHub-Profile-blue?logo=github)](https://github.com/Mohmaed-Saaed)
+
+### Ahmed Khaled  
+[![GitHub](https://img.shields.io/badge/GitHub-Profile-blue?logo=github)](https://github.com/AhmedMekheimer)
 
 ## 🛠 Tech Stack
 
