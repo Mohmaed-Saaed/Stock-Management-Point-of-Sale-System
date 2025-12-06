@@ -1,0 +1,33 @@
+﻿@model List<ItemTypeNodeVM>
+
+@foreach (var node in Model)
+{
+    <li data-id="@node.Id">
+        <div class="d-flex align-items-center gap-2 py-1">
+            @if (node.HasChildren)
+            {
+                <button type="button"
+                        class="btn btn-sm btn-outline-secondary js-expand"
+                        data-id="@node.Id" data-loaded="false">
+                    ▸
+                </button>
+            }
+            else
+            {
+                <span class="ms-4"></span>
+            }
+
+            <span>@node.Name</span>
+
+            <span class="ms-auto">
+                <a asp-action="Create" asp-route-parentId="@node.Id" class="btn btn-sm btn-success">Add</a>
+                <a asp-action="Edit" asp-route-id="@node.Id" class="btn btn-sm btn-primary">Edit</a>
+                <form asp-action="Delete" asp-route-id="@node.Id" method="post" class="d-inline"
+                      onsubmit="return confirm('Delete this type and ALL its children?');">
+                    <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+                </form>
+            </span>
+        </div>
+        <ul class="children list-unstyled ms-4 d-none"></ul>
+    </li>
+}

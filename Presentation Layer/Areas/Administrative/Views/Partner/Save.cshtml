@@ -1,0 +1,66 @@
+﻿@model PartnerVM
+<div class="container">
+	<div class="card shadow-lg border-0 rounded-4">
+		<div class="card-body p-4">
+			@if (Model.Id is null)
+			{
+				<h4 class="mb-4">Add Partner</h4>
+			}
+			else
+			{
+				<h4 class="mb-4">Edit Edit</h4>
+			}
+
+			<form asp-action="Save" method="post">
+				<div class="row">
+					<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+					<input asp-for="Id" type="hidden" value="@Model.Id" />
+					<!-- Name -->
+					<div class="mb-3 col-6">
+						<label asp-for="Name" class="control-label"></label>
+						<input asp-for="Name" class="form-control" />
+						<span asp-validation-for="Name" class="text-danger"></span>
+					</div>
+					<!-- Email -->
+					<div class="mb-3 col-6">
+						<label asp-for="Email" class="control-label"></label>
+						<input asp-for="Email" class="form-control" />
+						<span asp-validation-for="Email" class="text-danger"></span>
+					</div>
+
+					<div class="mb-3 col-6">
+						<label asp-for="PhoneNumber" class="control-label">Phone Number</label>
+						<input asp-for="PhoneNumber" class="form-control" />
+						<span asp-validation-for="PhoneNumber" class="text-danger"></span>
+					</div>
+
+					<div class="mb-3 col-6">
+						<label asp-for="partnerType" class="form-label">Partner type</label>
+						<select class="form-select" asp-for="partnerType" asp-items="@Model.PartnerList">
+							<option value="" >Select a partner</option>
+						</select>
+						<span asp-validation-for="partnerType" class="text-danger"></span>
+					</div>
+
+					@if (User.HasClaim("Permission", "Partner.Add"))
+					{
+						<!-- Submit -->
+						<div class="d-grid col-2 ">
+							<button type="submit" class="btn btn-primary">Submit</button>
+						</div>
+					}
+
+				</div>
+
+			</form>
+		</div>
+	</div>
+
+</div>
+
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+}

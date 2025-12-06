@@ -1,0 +1,485 @@
+﻿@model ReceiveOrderVM
+<div class="container">
+    <div class="card shadow-lg border-0 rounded-4">
+        <div class="card-body p-4">
+            @if(Model.ReveiveOrderId == null)
+            {
+                <h4 class="mb-4">Add Received Order</h4>
+            }
+            else
+            {
+                if(Model.Status==Status.Draft)
+                {
+                    <h4 class="mb-4">Edit Received Order</h4>
+                }
+                else
+                {
+                    <h4 class="mb-4">Approved Received Order</h4>
+                }
+            }
+
+            <form asp-action="Save" method="post">
+                <div class="row">
+                    <div id="validation" class="text-danger hide"></div>
+
+                    <input asp-for="ReveiveOrderId" type="hidden" value="@Model.ReveiveOrderId" />
+                    <input asp-for="ApplicationUserId" type="hidden" value="@Model.ApplicationUserId" />
+
+                    <div class="mb-3 col-3">
+                        <label asp-for="Date" class="control-label"></label>
+                        <input asp-for="Date" type="date" class="form-control" />
+                        <span asp-validation-for="Date" class="text-danger"></span>
+                    </div>
+       
+                    <div class="mb-3 col-3">
+                        <label asp-for="SupplierId" class="form-label">Supplier </label>
+                        <select class="form-select" asp-for="SupplierId" asp-items="@Model.SupplierList">
+                            <option value="">Select Item Supplier</option>
+                        </select>
+                        <span asp-validation-for="SupplierId" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3 col-3">
+                        <label asp-for="BranchId" class="form-label">Branch </label>
+                        <select class="form-select" asp-for="BranchId" asp-items="@Model.BranchList">
+                            <option value="">Select Item Branch</option>
+                        </select>
+                        <span asp-validation-for="BranchId" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3 col-3">
+                        <label asp-for="TaxId" class="form-label">Tax </label>
+                        <select class="form-select" asp-for="TaxId" asp-items="@Model.TaxList">
+                            <option value="">Select Item Tax or None</option>
+                        </select>
+                        <span asp-validation-for="TaxId" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3 col-3">
+                        <label asp-for="DiscountPercentage" class="form-label">Total discount Percentage</label>
+                        <input asp-for="DiscountPercentage" type="number" class="form-control" />
+                        <span asp-validation-for="DiscountPercentage" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3 col-3">
+                        <label asp-for="Code" class="control-label"></label>
+                        <input asp-for="Code" disabled class="form-control" />
+                        <span asp-validation-for="Code" class="text-danger"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="table-container">
+
+
+                                <div class="table-responsive">
+                                    <table class="table table-striped mb-0" id="invoiceTable">
+                                        <thead>
+                                            <tr>
+
+                                                <th>Item</th>
+                                                <th>Quantity</th>
+                                                <th>Price</th>
+                                                <th>Discount</th>
+                                                <th>Total</th>
+                                                <th>Delete</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="itemsTableBody">
+                                            @if (Model.OperationItems != null && Model.OperationItems.Any())
+                                            {
+                                                foreach (var item in Model.OperationItems)
+                                                {
+                                                    <partial name="Details" model="item" />
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <partial name="Details" model="new OperationItem()" />
+                                            }
+                                        </tbody>
+                                        
+                                        @if(Model.Status == Status.Draft)
+                                        {
+                                            <div class="mt-2">
+                                                <button type="button" id="addRow" class="btn btn-success">+ Add Row</button>
+                                            </div>
+
+                                        }
+                             
+
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                    </div>
+
+                    <div class="col-12 row">
+                        <div class="mb-3 col-4">
+                            <label asp-for="TotalQuantity" class="control-label">Total Quantity</label>
+                            <input disabled asp-for="TotalQuantity" class="form-control" />
+                            <span asp-validation-for="TotalQuantity" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3 col-4">
+                            <label asp-for="TotalAmount" class="control-label">Total Amount</label>
+                            <input disabled asp-for="TotalAmount" class="form-control" />
+                            <span asp-validation-for="TotalAmount" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3 col-4">
+                            <label asp-for="GrandTotal" class="control-label"> Grand Total</label>
+                            <input disabled asp-for="GrandTotal" class="form-control grandTotal" />
+                            <span asp-validation-for="GrandTotal" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <hr />
+             
+                    
+                    <div class="col-12">
+                        <div class="mb-3 col-4">
+                            <label asp-for="TotalDiscountAmount" class="control-label">Total Discount Amount</label>
+                            <input disabled asp-for="TotalDiscountAmount" class="form-control" />
+                            <span asp-validation-for="TotalDiscountAmount" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <hr />
+                    <div class="col-12">
+                        <div class="mb-3 col-4">
+                            <label asp-for="TotalTaxesAmount" class="control-label">Total Taxes Amount
+                                <span id="TaxesPercentage"> 
+                                    @if (Model.TaxId != 0){
+                                        <text>
+                                        @Model.TaxId 
+                                        %
+                                        </text>
+                                    }
+
+                                </span>
+
+                            </label>
+                            <input disabled asp-for="TotalTaxesAmount" class="form-control" />
+                            <span asp-validation-for="TotalTaxesAmount" class="text-danger"></span>
+                        </div>
+                    </div>
+       
+                <div class="d-flex justify-content-between">
+
+                        <!-- Submit -->
+                        @if (User.HasClaim("Permission", "ReceiveOrder.Add") && Model.Status == Status.Draft)
+                        {
+                            <div class="d-grid col-2 mt-5">
+                                <button id="submitBtn" type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        }
+                        @if (User.HasClaim("Permission", "ReceiveOrder.Confirm") && Model.Status == Status.Draft && Model.ReveiveOrderId != null)
+                        {
+                            <div class="d-grid col-2 mt-5">
+                                <button type="button" class=" btn btn-info" data-bs-toggle="modal" data-bs-target="#confirmReceiveOrderModal" data-id="@Model.ReveiveOrderId">Confirm</button>
+                            </div>
+                        }
+
+                </div>
+
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<partial name="Confirm" />
+<script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+<script>
+    $(document).ready(function () {
+
+        
+
+
+        // Add new row
+        $('#addRow').click(function () {
+            $.get('@Url.Action("RenderEmptyRow", "ReceiveOrder")', function (data) {
+                const $row = $(data);
+                $('#itemsTableBody').append($row);
+                updateGrandTotal(); // keep synced
+            });
+        });
+
+        // Delete row
+        $('#itemsTableBody').on('click', '.delete-row', function () {
+
+            var rowCount = $('#itemsTableBody tr').length;
+           
+            if(rowCount > 1 ) {
+                $(this).closest('tr').remove();
+                updateGrandTotal();
+            }
+        });
+
+        // Load items dynamically
+        $(document).on("focus", ".itemSelect", function () {
+            const $select = $(this);
+            $select.empty().append('<option value="">Select Item</option>');
+
+            $.ajax({
+                url: '@Url.Action("GetItems", "ReceiveOrder")',
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    $.each(data, function (i, item) {
+                        $select.append(
+                            $("<option>", { value: item.id, text: item.name })
+                        );
+                    });
+                },
+                error: function () {
+                    alert("Could not load items.");
+                }
+            });
+        });
+
+        // Auto calculate row total
+        $(document).on("input", ".Quantity, .BuyingPrice, .DiscountRate", function () {
+            const $row = $(this).closest("tr");
+            const qty = parseFloat($row.find(".Quantity").val()) || 0;
+            const price = parseFloat($row.find(".BuyingPrice").val()) || 0;
+            const discount = parseFloat($row.find(".DiscountRate").val()) || 0;
+
+            let total = qty * price;
+            total = total - (total * (discount / 100));
+
+            $row.find(".TotalPrice").val(total.toFixed(2));
+            updateTotalAmount();
+            updateGrandTotal();
+        });
+
+        function updateTotalAmount() {
+
+            let TotalAmount = 0;
+                        // sum row totals
+            $('#itemsTableBody .TotalPrice').each(function () {
+                TotalAmount += parseFloat($(this).val()) || 0;
+            });
+
+            $('#TotalAmount').val(TotalAmount.toFixed(2));
+        }
+
+
+
+
+
+
+        // --- helper: total quantity ---
+        function updateTotalQuantity() {
+            let totalQuantity = 0;
+            $('#itemsTableBody .Quantity').each(function () {
+                totalQuantity += parseFloat($(this).val()) || 0;
+            });
+            $('#TotalQuantity').val(totalQuantity.toFixed(2));
+        }
+
+        // --- main totals calculation ---
+        function updateGrandTotal() {
+            let subTotal = 0;
+
+            // sum row totals
+            $('#itemsTableBody .TotalPrice').each(function () {
+                subTotal += parseFloat($(this).val()) || 0;
+            });
+
+            // store subtotal somewhere if you need
+            $('#SubTotal').val(subTotal.toFixed(2));
+
+            // apply discount %
+            const discountPercent = parseFloat($("#DiscountPercentage").val()) || 0;
+            let discountAmount = 0;
+            if (discountPercent > 0) {
+                discountAmount = (discountPercent / 100) * subTotal;
+            }
+            $("#TotalDiscountAmount").val(discountAmount.toFixed(2));
+
+            // apply tax %
+            const taxPercent = parseFloat($("#TaxId").val()) || 0;
+            let taxAmount = 0;
+            if (taxPercent > 0) {
+                taxAmount = (taxPercent / 100) * (subTotal - discountAmount);
+            }
+            $("#TotalTaxesAmount").val(taxAmount.toFixed(2));
+
+            // final grand total
+            let grandTotal = subTotal - discountAmount + taxAmount;
+            $(".grandTotal").val(grandTotal.toFixed(2));
+
+            // also update quantity
+            updateTotalQuantity();
+        }
+
+        // Trigger recalculation when tax or discount changes
+        $('#TaxId').on("change", function () {
+            var Percentage = this.value;
+            console.log(Percentage);
+            updateGrandTotal();
+
+
+            if(Percentage == "") {
+
+                $("#TaxesPercentage").html("") .css("display", "none"); 
+
+            } else {
+
+                $("#TaxesPercentage").html(Percentage + "%").css("display", "inline-block");
+            }
+
+        });
+
+        $('#DiscountPercentage').on("input", function () {
+            updateGrandTotal();
+        });
+
+
+        // init
+        updateGrandTotal();
+
+            $('#confirmReceiveOrderModal').on('show.bs.modal', function (event) {
+                var button = $(event.relatedTarget);
+                var Id = button.data('id');
+                $(this).find('#IdToConfirm').val(Id);
+            });
+
+            $("#confirmReceiveOrder").on("click" , function() {
+              $('#ConfirmReceiveOrderForm').submit();
+            })
+
+
+                    // submit with AJAX
+    $("#submitBtn").on("click", function (e) {
+        e.preventDefault();
+        var isRowsHasErrors = false;
+        const items = [];
+
+
+
+    if ($("#BranchId").val() === "") {
+        $("#validation")
+            .show()
+            .text("Please choose a Branch");
+        return;
+    }
+
+    if ($("#SupplierId").val() === "") {
+        $("#validation")
+            .show()
+            .text("Please choose a Supplier");
+        return;
+    }
+
+       $("#itemsTableBody tr").each(function () {
+            const $row = $(this);
+            const itemId = $row.find(".itemSelect").val();
+            const Quantity = $row.find(".Quantity").val();
+            const  BuyingPrice = parseFloat($row.find(".BuyingPrice").val()) || 0;
+
+            if(itemId == 0 || Quantity == 0 || BuyingPrice == 0) {
+                 $("#validation")
+            .show()
+            .text("Please make sure all items are selected and have quantity and price ");
+             isRowsHasErrors = true;
+            }
+
+        });
+
+        if(isRowsHasErrors) {
+            return null;
+        }
+
+
+
+
+
+
+        // collect items from table
+        $("#itemsTableBody tr").each(function () {
+            const $row = $(this);
+            const itemId = $row.find(".itemSelect").val();
+            const operationId = $row.find("#Id").val();
+       
+            items.push({
+                Id : operationId,
+                ItemId: itemId,
+                Quantity: parseFloat($row.find(".Quantity").val()) || 0,
+                BuyingPrice: parseFloat($row.find(".BuyingPrice").val()) || 0,
+                DiscountRate: parseFloat($row.find(".DiscountRate").val()) || 0,
+                TotalPrice: parseFloat($row.find(".TotalPrice").val()) || 0
+            });
+        });
+
+
+    if (items.length === 0) {
+        $("#validation")
+            .show()
+            .text("Please enter row data");
+        return;
+    }
+
+
+
+        console.log(items);
+
+        const order = {
+            ReveiveOrderId: $("input[name='ReveiveOrderId']").val(),
+            Date: $("input[name='Date']").val(),
+            SupplierId: $("select[name='SupplierId']").val(),
+            BranchId: $("select[name='BranchId']").val(),
+            TaxId: $("select[name='TaxId']").val(),
+            DiscountPercentage: $("input[name='DiscountPercentage']").val(),
+            TotalAmount: parseFloat($("#TotalAmount").val()) || 0,
+            GrandTotal: parseFloat($("#GrandTotal").val()) || 0,
+            TotalQuantity: parseFloat($("#TotalQuantity").val()) || 0,
+            TotalDiscountAmount: parseFloat($("#TotalDiscountAmount").val()) || 0,
+            TotalDiscountRate: parseFloat($("input[name='DiscountPercentage']").val()) || 0,
+            TotalTaxesAmount: parseFloat($("#TotalTaxesAmount").val()) || 0,
+            TotalTaxesRate: parseFloat($("select[name='TaxId']").val()) || 0,
+            ApplicationUserId: $("#ApplicationUserId").val(),
+            Code: $("#Code").val(),
+
+            OperationItems: items
+        };
+
+        console.log(order);
+
+        const token = $("input[name='__RequestVerificationToken']").val();
+
+        $.ajax({
+            url: '@Url.Action("Save", "ReceiveOrder")',
+            method: "POST",
+            data: { receiveOrderVM: order },
+            headers: { "RequestVerificationToken": token },
+            beforeSend: function () {
+                $("#submitBtn").prop("disabled", true);
+            },
+            success: function (res) {
+                if(res.status) {
+                    window.location.href = "/Branch/ReceiveOrder/Index";
+                } 
+            },
+            error: function (res) {
+               $("#validation").show().text(res.responseJSON.error);
+            }
+        });
+    });
+
+    });
+</script>
+
+
+
+@section Scripts {
+    @{
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.2/js/bootstrap.bundle.min.js"></script>
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
+
+

@@ -1,0 +1,68 @@
+﻿/* Table styling */
+.table thead th {
+    background-color: #3A416F;
+    color: white;
+    font-weight: 600;
+    border: none;
+    padding: 10px 12px;
+    font-size: 0.9rem;
+}
+
+.table tbody tr {
+    transition: background-color 0.2s;
+}
+
+    .table tbody tr:hover {
+        background-color: rgba(58, 65, 111, 0.03);
+    }
+
+.table tbody td {
+    padding: 10px 12px;
+    vertical-align: middle;
+    font-size: 0.9rem;
+}
+
+
+/* Search wrapper fixes */
+.table-search-wrapper {
+    display: flex;
+    align-items: stretch;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #d2d6da;
+    overflow: hidden;
+    height: 32px;
+}
+
+    .table-search-wrapper .form-control {
+        border: none;
+        box-shadow: none !important;
+        flex: 1;
+        height: 100%;
+        font-size: 0.875rem;
+    }
+
+    .table-search-wrapper .btn {
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        border-radius: 0;
+    }
+
+        .table-search-wrapper .btn:hover {
+            background-color: #2a3060;
+        }
+
+.form-control-sm, .form-select-sm {
+    border: 1px solid #d2d6da;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    height: 32px;
+}
+
+    .form-control-sm:focus, .form-select-sm:focus {
+        border-color: #3A416F;
+        box-shadow: 0 0 0 0.2rem rgba(58, 65, 111, 0.15);
+    }

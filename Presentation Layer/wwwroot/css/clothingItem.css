@@ -1,0 +1,66 @@
+﻿/* Search wrapper fixes */
+.table-search-wrapper {
+    display: flex;
+    align-items: stretch;
+    background: white;
+    border-radius: 8px;
+    border: 1px solid #d2d6da;
+    overflow: hidden;
+    height: 32px;
+}
+
+    .table-search-wrapper .form-control {
+        border: none;
+        box-shadow: none !important;
+        flex: 1;
+        height: 100%;
+        font-size: 0.875rem;
+    }
+
+    .table-search-wrapper .btn {
+        border: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        border-radius: 0;
+    }
+
+        .table-search-wrapper .btn:hover {
+            background-color: #2a3060;
+        }
+
+.form-control-sm, .form-select-sm {
+    border: 1px solid #d2d6da;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    height: 32px;
+}
+
+    .form-control-sm:focus, .form-select-sm:focus {
+        border-color: #3A416F;
+        box-shadow: 0 0 0 0.2rem rgba(58, 65, 111, 0.15);
+    }
+
+/* Compact filter styling */
+.compact-filter-card {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    border: none;
+    border-radius: 8px;
+}
+
+/* No longer needed, as we are managing layout with inline styles */
+/* .compact-filter-body .row {
+    flex-wrap: nowrap;
+    justify-content: space-between;
+} */
+
+.mb-3 {
+    margin-bottom: 8px !important;
+}
+
+.p-3 {
+    padding: 0px;
+    padding-right: 10px;
+    padding-left: 10px;
+}

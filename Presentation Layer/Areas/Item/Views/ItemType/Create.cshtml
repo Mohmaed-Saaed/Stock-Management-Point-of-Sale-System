@@ -1,0 +1,81 @@
+﻿@model ItemTypeInputVM
+@{
+	ViewData["Title"] = "Create Item Type";
+}
+<h3>Create Item Type</h3>
+
+<form asp-action="Create" method="post" enctype="multipart/form-data">
+	<input type="hidden" asp-for="ParentId" />
+	@if (Model.ParentName != null)
+	{
+		<input type="hidden" asp-for="ParentName" />
+	}
+	<div class="mb-3">
+		<label class="form-label">Parent</label>
+		<input class="form-control" value="@(Model.ParentId == null ? "(root)" : Model.ParentName)" disabled />
+	</div>
+	<div class="mb-3">
+		<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+		<label asp-for="Name" class="form-label"></label>
+		<input asp-for="Name" class="form-control" />
+		<span asp-validation-for="Name" class="text-danger"></span>
+
+		<!-- Upload New Image -->
+		<div class="form-group mb-3 col-12">
+			<label class="form-label">Upload Image</label>
+			<input type="file" class="form-control" accept="image/*" name="formFile" onchange="previewNewImage(event)">
+
+			<!-- Preview new image -->
+			<div id="newImagePreview" class="mt-2"></div>
+		</div>
+
+		<div class="form-actions mt-3">
+			<button type="submit" class="btn btn-primary btn-sm">Submit</button>
+			<a asp-action="Index" class="btn btn-sm btn-danger">Cancel</a>
+		</div>
+	</div>
+</form>
+
+@section Scripts {
+	<partial name="_ValidationScriptsPartial" />
+	<script>
+		// Preview newly uploaded image
+		function previewNewImage(event) {
+			const input = event.target;
+			const previewContainer = document.getElementById("newImagePreview");
+
+			previewContainer.innerHTML = ""; // Clear old preview
+
+			if (input.files && input.files[0]) {
+				const file = input.files[0];
+				if (!file.type.match("image.*")) return;
+
+				const reader = new FileReader();
+				reader.onload = function (e) {
+					const img = document.createElement("img");
+					img.src = e.target.result;
+					img.className = "img-thumbnail";
+					img.style.maxHeight = "150px";
+
+					// Remove button for new preview
+					const wrapper = document.createElement("div");
+					wrapper.className = "position-relative d-inline-block";
+
+					const removeBtn = document.createElement("button");
+					removeBtn.innerHTML = "&times;";
+					removeBtn.className = "btn btn-danger btn-sm position-absolute top-0 end-0";
+					removeBtn.style.transform = "translate(50%,-50%)";
+					removeBtn.onclick = () => {
+						input.value = ""; // clear file input
+						previewContainer.innerHTML = "";
+					};
+
+					wrapper.appendChild(img);
+					wrapper.appendChild(removeBtn);
+					previewContainer.appendChild(wrapper);
+				};
+				reader.readAsDataURL(file);
+			}
+		}
+	</script>
+}

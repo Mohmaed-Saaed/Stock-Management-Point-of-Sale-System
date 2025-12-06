@@ -1,0 +1,25 @@
+﻿@model RoleVM.PermissionTreeViewModel
+
+<li>
+    <div class="form-check align-items-center">
+        @if (Model.Children.Any())
+        {
+            <button type="button" class="btn btn-sm btn-link toggle-children m-1">+</button>
+        }
+        <input type="checkbox" class="form-check-input parent-checkbox mt-2"
+               name="PermissionsIds"
+               value="@Model.Id"
+               @(Model.IsAssigned ? "checked" : "") />
+        <label class="form-check-label ms-1">@Model.EnglishName</label>
+    </div>
+
+    @if (Model.Children.Any())
+    {
+        <ul class="list-unstyled ms-4 child-permissions" style="display:none;">
+            @foreach (var child in Model.Children)
+            {
+                <partial name="_PermissionTreePartial" model="child" />
+            }
+        </ul>
+    }
+</li>

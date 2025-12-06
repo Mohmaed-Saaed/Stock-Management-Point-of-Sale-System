@@ -1,0 +1,598 @@
+﻿@using Newtonsoft.Json
+@model DashboardVM
+
+@if (User.HasClaim("Permission", "Dashboard.View"))
+{
+
+    <div class="container-fluid py-2" style="margin-bottom:32px;">
+        <div class="row">
+            <div class="ms-3" style="padding:0 !important;">
+                <h2>Sales & Stock Performance</h2>
+                <p class="mb-4">
+
+                </p>
+            </div>
+
+            <!--Number of Branches-->
+            <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+                <div class="card">
+                    <div class="card-header p-2 ps-3">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <p class="text-sm mb-0 text-capitalize">Number of Branches</p>
+                                <h4 class="mb-0">@Model.NumOfBranches.ToString("N0")</h4>
+                            </div>
+                            <div class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg">
+                                <i class="material-symbols-rounded opacity-10">store</i>
+                            </div>
+                        </div>
+                    </div>
+                    <hr class="dark horizontal my-0">
+                    <div class="card-footer p-2 ps-3">
+                        <p class="mb-0 text-sm"><span class="text-success font-weight-bolder">+ @Model.NewBranchesYearly.ToString("N0") </span>New branches this year</p>
+                    </div>
+                </div>
+            </div>
+
+            <!--Total Registered Stock Items-->
+            <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+                <div class="card">
+                    <div class="card-header p-2 ps-3">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <p class="text-sm mb-0 text-capitalize" style="font-size:small !important;">Total Registered Stock Items</p>
+                                <h4 class="mb-0">@Model.NumOfStockItems.ToString("N0")</h4>
+                            </div>
+                            <div class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg">
+                                <i class="material-symbols-rounded opacity-10">styler</i>
+                            </div>
+                        </div>
+                    </div>
+                    <hr class="dark horizontal my-0">
+                    <div class="card-footer p-2 ps-3">
+                        <p class="mb-0 text-sm"><span class="text-success font-weight-bolder">+ @Model.NewItemsMonthly.ToString("N0") </span>New items this month</p>
+                    </div>
+                </div>
+            </div>
+
+            <!--Sales of Month-->
+            <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+                <div class="card">
+                    <div class="card-header p-2 ps-3">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                @if (Model.MonthlySalesRate == -1)
+                                {
+                                    <p class="text-sm mb-0 text-capitalize">Sales of Month</p>
+                                    <h4 class="mb-0">E£ 0</h4>
+                                }
+                                else
+                                {
+                                    <p class="text-sm mb-0 text-capitalize">Sales of Month</p>
+                                    <h4 class="mb-0">E£ @Model.SalesOfMonth.ToString("N0")</h4>
+                                }
+                            </div>
+                            <div class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg">
+                                <i class="material-symbols-rounded opacity-10">paid</i>
+                            </div>
+                        </div>
+                    </div>
+                    <hr class="dark horizontal my-0">
+                    <div class="card-footer p-2 ps-3">
+                        @if (Model.MonthlySalesRate == -2)
+                        {
+                            <p class="mb-0 text-sm">No invoices last month</p>
+                        }
+                        else if (Model.MonthlySalesRate == -1)
+                        {
+                            <p class="mb-0 text-sm"><span class="font-weight-bolder">0 % </span>than last month</p>
+                        }
+                        else
+                        {
+                            <p class="mb-0 text-sm">
+                                <span class="@(Model.MonthlySalesRate >= 0 ? "text-success" : "text-danger") font-weight-bolder">
+                                    @(Model.MonthlySalesRate > 0 ? "+" : "")@Model.MonthlySalesRate.ToString("N1") %
+                                </span>
+                                than last month
+                            </p>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!--Sales of Today-->
+            <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4">
+                <div class="card">
+                    <div class="card-header p-2 ps-3">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                @if (Model.DailySalesRate == -1)
+                                {
+                                    <p class="text-sm mb-0 text-capitalize">Sales of Today</p>
+                                    <h4 class="mb-0">E£ 0</h4>
+                                }
+                                else
+                                {
+                                    <p class="text-sm mb-0 text-capitalize">Sales of Today</p>
+                                    <h4 class="mb-0">E£ @Model.SalesOfToday.ToString("N0")</h4>
+                                }
+                            </div>
+                            <div class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg">
+                                <i class="material-symbols-rounded opacity-10">paid</i>
+                            </div>
+                        </div>
+                    </div>
+                    <hr class="dark horizontal my-0">
+                    <div class="card-footer p-2 ps-3">
+                        @if (Model.DailySalesRate == -2)
+                        {
+                            <p class="mb-0 text-sm">No invoices yesterday</p>
+                        }
+                        else if (Model.DailySalesRate == -1)
+                        {
+                            <p class="mb-0 text-sm"><span class="font-weight-bolder">0 % </span>than yesterday</p>
+                        }
+                        else
+                        {
+                            <p class="mb-0 text-sm">
+                                <span class="@(Model.DailySalesRate >= 0 ? "text-success" : "text-danger") font-weight-bolder">
+                                    @(Model.DailySalesRate > 0 ? "+" : "")@Model.DailySalesRate.ToString("N1") %
+                                </span>
+                                than yesterday
+                            </p>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!--Average Invoice Value This Month-->
+            <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
+                <div class="card">
+                    <div class="card-header p-2 ps-3">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <p style="font-size:small;">Average Invoice Value This Month</p>
+                                @if (Model.AvgInvValRate == -1)
+                                {
+                                    <h6 class="mb-0">No Invoices This Month</h6>
+                                }
+                                else
+                                {
+                                    <h4 class="mb-0">E£ @Model.AvgInvValMonth.ToString("N1")</h4>
+                                }
+                            </div>
+                            <div class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg">
+                                <i class="material-symbols-rounded opacity-10">receipt_long</i>
+                            </div>
+                        </div>
+                    </div>
+                    <hr class="dark horizontal my-0">
+                    <div class="card-footer p-2 ps-3">
+                        @if (Model.AvgInvValRate == -2)
+                        {
+                            <p class="mb-0 text-sm">No invoices last month</p>
+                        }
+                        else if (Model.AvgInvValRate == -1)
+                        {
+                            <p class="mb-0 text-sm">
+                                <span class="font-weight-bolder">
+                                    0 %
+                                </span>
+                                than last month
+                            </p>
+                        }
+                        else
+                        {
+                            <p class="mb-0 text-sm">
+                                <span class="@(Model.AvgInvValRate >= 0 ? "text-success" : "text-danger") font-weight-bolder">
+                                    @(Model.AvgInvValRate > 0 ? "+" : "")@Model.AvgInvValRate.ToString("N1") %
+                                </span>
+                                than last month
+                            </p>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!--Average Sales per Day This Month-->
+            <div class="col-xl-3 col-sm-6 mb-xl-0 mb-4 mt-4">
+                <div class="card">
+                    <div class="card-header p-2 ps-3">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <p style="font-size:small;">Average Sales per Day This Month</p>
+                                @if (Model.AvgSalesPerDayRate == -1)
+                                {
+                                    <h6 class="mb-0">No Invoices This Month</h6>
+                                }
+                                else
+                                {
+                                    <h4 class="mb-0">E£ @Model.AvgSalesPerDay.ToString("N1")</h4>
+                                }
+                            </div>
+                            <div class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg">
+                                <i class="material-symbols-rounded opacity-10">receipt_long</i>
+                            </div>
+                        </div>
+                    </div>
+                    <hr class="dark horizontal my-0">
+                    <div class="card-footer p-2 ps-3">
+                        @if (Model.AvgSalesPerDayRate == -2)
+                        {
+                            <p class="mb-0 text-sm">No invoices last month</p>
+                        }
+                        else if (Model.AvgSalesPerDayRate == -1)
+                        {
+                            <p class="mb-0 text-sm">
+                                <span class="font-weight-bolder">
+                                    0 %
+                                </span>
+                                than last month
+                            </p>
+                        }
+                        else
+                        {
+                            <p class="mb-0 text-sm">
+                                <span class="@(Model.AvgSalesPerDayRate >= 0 ? "text-success" : "text-danger") font-weight-bolder">
+                                    @(Model.AvgSalesPerDayRate > 0 ? "+" : "")@Model.AvgSalesPerDayRate.ToString("N1") %
+                                </span>
+                                than last month
+                            </p>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <!--Total Stock Value-->
+            <div class="col-xl-6 col-sm-6 mb-xl-0 mb-4 mt-4">
+                <div class="card">
+                    <div class="card-header p-2 ps-3">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <p class="text-sm mb-0 text-capitalize" style="padding-bottom:21px; font-size:x-large !important;">Total Stock Value</p>
+                                <h4 class="mb-0">E£ @Model.TotalStockVal.ToString("N0")</h4>
+                            </div>
+                            <div class="icon icon-md icon-shape bg-gradient-dark shadow-dark shadow text-center border-radius-lg">
+                                <i class="material-symbols-rounded opacity-10">warehouse</i>
+                            </div>
+                        </div>
+                    </div>
+                    <hr class="dark horizontal my-0">
+                    <div class="card-footer p-2 ps-3" style="padding-bottom:30px !important;">
+                        <p class="mb-0 text-sm"></p>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- Charts -->
+            <!-- Total Sales (Monthly) Chart -->
+            <div class="col-lg-6 col-md-12 mb-4" style="margin-top:24px !important;">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="mb-0">Total Sales (Monthly)</h6>
+                        <p class="text-sm">Revenue generated from all branches.</p>
+                        <div class="pe-2">
+                            <div class="chart">
+                                <canvas id="total-sales-chart" class="chart-canvas" height="170"></canvas>
+                            </div>
+                        </div>
+                        <hr class="dark horizontal">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Total Purchasing (Monthly) Chart -->
+            <div class="col-lg-6 col-md-12 mb-4" style="margin-top:24px !important;">
+                <div class="card">
+                    <div class="card-body">
+                        <h6 class="mb-0">Total Purchasing (Monthly)</h6>
+                        <p class="text-sm">Receive Orders in all branches.</p>
+                        <div class="pe-2">
+                            <div class="chart">
+                                <canvas id="total-purchasing-chart" class="chart-canvas" height="170"></canvas>
+                            </div>
+                        </div>
+                        <hr class="dark horizontal">
+                    </div>
+                </div>
+            </div>
+
+            <!--Best Selling Branches-->
+            <div class="col-lg-6 col-md-6 mb-md-0 mb-4">
+                <div class="card">
+                    <div class="card-header pb-0">
+                        <div class="row">
+                            <div class="col-lg-6 col-7">
+                                <h6>Best-Selling Branches</h6>
+                                <p class="text-sm mb-0">
+                                    <i class="fa fa-arrow-up text-success" aria-hidden="true"></i>
+                                    <span class="font-weight-bold ms-1">Top 6</span> by total sales
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body px-0 pb-2">
+                        <div class="table-responsive">
+                            <table class="table align-items-center mb-0">
+                                <thead>
+                                    <tr>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Branch</th>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 text-center">Total Sales</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var branchDTO in Model.TopSellingBranches)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <div class="d-flex px-2 py-1">
+                                                    <div class="d-flex flex-column justify-content-center">
+                                                        <h6 class="mb-0 text-sm">@branchDTO.BranchName</h6>
+                                                    </div>
+                                                </div>
+                                            </td>
+                                            <td class="align-middle text-center text-sm">
+                                                <span class="text-xs font-weight-bold">E£ @branchDTO.TotalSales.ToString("N0")</span>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--Best Selling Items-->
+            <div class="col-lg-6 col-md-6">
+                <div class="card h-100">
+                    <div class="card-header pb-0">
+                        <h6>Best-Selling Items</h6>
+                        <p class="text-sm">
+                            <i class="fa fa-arrow-up text-success" aria-hidden="true"></i>
+                            <span class="font-weight-bold">Top 5</span> by quantity sold
+                        </p>
+                    </div>
+                    <div class="card-body p-3">
+                        <div class="timeline timeline-one-side">
+                            @foreach (var item in Model.TopSellingItems)
+                            {
+                                <div class="timeline-block mb-3">
+                                    <span class="timeline-step">
+                                        <i class="material-symbols-rounded text-info text-gradient">shopping_bag</i>
+                                    </span>
+                                    <div class="timeline-content">
+                                        <h6 class="text-dark text-sm font-weight-bold mb-0">@item.ItemName</h6>
+                                        <p class="text-secondary font-weight-bold text-xs mt-1 mb-0">Qty Sold: @item.TotalQuantity.ToString("N0")</p>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--Low-Stock Alerts-->
+            <div class="col-lg-6 col-md-6 mb-md-0 mb-4" style="margin-top:24px !important;">
+                <div class="card">
+                    <div class="card-header pb-0">
+                        <h6>Low-Stock Alerts</h6>
+                        <p class="text-sm">
+                            Items with quantity below their Restock Threshold.
+                        </p>
+                    </div>
+                    <div class="card-body px-0 pb-2">
+                        <div class="table-responsive">
+                            <table class="table align-items-center mb-0">
+                                <thead>
+                                    <tr>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Item</th>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Branch</th>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Restock Threshold</th>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Current Stock</th>
+                                    </tr>
+                                </thead>
+                                @foreach (var item in Model.LowStockBranchItems)
+                                {
+                                    <tbody>
+                                        <tr>
+                                            <td><h6 class="mb-0 text-sm ps-3">@item.Item.Name</h6></td>
+                                            <td><h6 class="mb-0 text-sm ps-3">@item.Branch.Name</h6></td>
+                                            <td><span class="text-xs font-weight-bold">@item.RestockThreshold</span></td>
+                                            <td><span class="text-xs font-weight-bold">@item.Quantity.ToString("N0")</span></td>
+                                        </tr>
+                                    </tbody>
+                                }
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--Slow-Moving Items-->
+            <div class="col-lg-6 col-md-6 mb-md-0 mb-4" style="margin-top:24px !important;">
+                <div class="card">
+                    <div class="card-header pb-0">
+                        <h6>Slow-Moving Items</h6>
+                        <p class="text-sm">
+                            Items that haven't sold in a long time.
+                        </p>
+                    </div>
+                    <div class="card-body px-0 pb-2">
+                        <div class="table-responsive">
+                            <table class="table align-items-center mb-0">
+                                <thead>
+                                    <tr>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Item</th>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Branch</th>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Last Sold in</th>
+                                        <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7 ps-2">Current Stock</th>
+                                    </tr>
+                                </thead>
+                                @foreach (var item in Model.SlowMovingBranchItems)
+                                {
+                                    <tbody>
+                                        <tr>
+                                            <td><h6 class="mb-0 text-sm ps-3">@item.ItemName</h6></td>
+                                            <td><h6 class="mb-0 text-sm ps-3">@item.BranchName</h6></td>
+                                            @if (item.YearsSinceLastSale > 0)
+                                            {
+                                                <td><span class="text-xs font-weight-bold">@item.YearsSinceLastSale Years</span></td>
+                                            }
+                                            else if (item.MonthsSinceLastSale > 0)
+                                            {
+                                                <td><span class="text-xs font-weight-bold">@item.MonthsSinceLastSale Months</span></td>
+                                            }
+                                            else
+                                            {
+                                                <td><span class="text-xs font-weight-bold">@item.DaysSinceLastSale Days</span></td>
+                                            }
+                                            <td><h6 class="mb-0 text-sm ps-3">@item.Quantity.ToString("N0")</h6></td>
+                                        </tr>
+                                    </tbody>
+                                }
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @section Scripts {
+        <!-- Chart.js CDN (Required for the charts) -->
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+        <script>
+            // ----------------------------------------------------------------------
+            // 1. Data Injection from C# ViewModel (Replace placeholders with your Model data)
+            // IMPORTANT: Ensure your C# lists/arrays contain only numbers/strings for valid JSON.
+            // ----------------------------------------------------------------------
+
+            // Example placeholder: Model.Last12MonthsLabels should be List<string> (e.g., ["Oct 24", "Nov 24", ...])
+            const monthLabels = @Html.Raw(JsonConvert.SerializeObject(Model.Last12MonthsLabels));
+
+            // Example placeholder: Model.Last12MonthsSales should be List<decimal> or List<int>
+            const salesData = @Html.Raw(JsonConvert.SerializeObject(Model.Last12MonthsSales));
+
+            // Example placeholder: Model.Last12MonthsPurchases should be List<decimal> or List<int>
+            const purchasingData = @Html.Raw(JsonConvert.SerializeObject(Model.Last12MonthsPurchases));
+
+            // Fallback data if no data is available (for local testing/setup)
+            if (!monthLabels || monthLabels.length === 0) {
+                monthLabels = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                salesData = [50, 70, 60, 80, 75, 90, 85, 100, 95, 110, 105, 120]; // Mock sales
+                purchasingData = [40, 60, 50, 70, 65, 80, 75, 90, 85, 100, 95, 110]; // Mock purchasing
+            }
+
+            // ----------------------------------------------------------------------
+            // 2. Chart Rendering Functions
+            // ----------------------------------------------------------------------
+
+            function renderSalesChart() {
+                const ctx = document.getElementById("total-sales-chart").getContext("2d");
+                new Chart(ctx, {
+                    type: "bar", // Vertical Bar Chart
+                    data: {
+                        labels: monthLabels,
+                        datasets: [{
+                            label: "Revenue (E£)",
+                            backgroundColor: '#007bff', // Bootstrap Blue
+                            data: salesData,
+                            borderRadius: 4,
+                            maxBarThickness: 14
+                        }],
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                                callbacks: {
+                                    label: function(context) {
+                                        return ' E£ ' + context.formattedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: { drawBorder: false, display: true },
+                                ticks: { display: true, padding: 10 }
+                            },
+                            x: {
+                                grid: { drawBorder: false, display: false },
+                                ticks: { display: true }
+                            },
+                        },
+                    },
+                });
+            }
+
+            function renderPurchasingChart() {
+                const ctx = document.getElementById("total-purchasing-chart").getContext("2d");
+                new Chart(ctx, {
+                    type: "bar", // Vertical Bar Chart
+                    data: {
+                        labels: monthLabels,
+                        datasets: [{
+                            label: "Cost (E£)",
+                            backgroundColor: '#dc3545', // Bootstrap Red
+                            data: purchasingData,
+                            borderRadius: 4,
+                            maxBarThickness: 14
+                        }],
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: false },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                                callbacks: {
+                                    label: function(context) {
+                                        return ' E£ ' + context.formattedValue.replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: { drawBorder: false, display: true },
+                                ticks: { display: true, padding: 10 }
+                            },
+                            x: {
+                                grid: { drawBorder: false, display: false },
+                                ticks: { display: true }
+                            },
+                        },
+                    },
+                });
+            }
+
+            // ----------------------------------------------------------------------
+            // 3. Initialization
+            // ----------------------------------------------------------------------
+
+            // Run the chart rendering functions when the page is fully loaded
+            window.onload = function() {
+                renderSalesChart();
+                renderPurchasingChart();
+            };
+
+        </script>
+    }
+
+    @section Styles {
+        <link href="~/css/chart.css" rel="stylesheet" />
+    }
+
+}

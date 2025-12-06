@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Progress Dashboard</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #0d1117;
+            color: #c9d1d9;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .header {
+            text-align: center;
+            padding: 20px 0;
+            border-bottom: 1px solid #30363d;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: #58a6ff;
+            margin-bottom: 10px;
+        }
+        
+        h2 {
+            color: #58a6ff;
+            margin: 25px 0 15px 0;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #30363d;
+        }
+        
+        h3 {
+            color: #f0883e;
+            margin: 20px 0 10px 0;
+        }
+        
+        .container {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+        }
+        
+        .card {
+            background-color: #161b22;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #30363d;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+        
+        .team-member {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 12px;
+            background-color: #1c2128;
+            border-radius: 6px;
+        }
+        
+        .team-member img {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 15px;
+            border: 2px solid #58a6ff;
+        }
+        
+        .phase {
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #30363d;
+        }
+        
+        .phase:last-child {
+            border-bottom: none;
+        }
+        
+        .task-list {
+            list-style-type: none;
+            margin-top: 10px;
+        }
+        
+        .task-list li {
+            padding: 8px 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .task-list i {
+            margin-right: 10px;
+            width: 20px;
+            text-align: center;
+        }
+        
+        .completed {
+            color: #3fb950;
+        }
+        
+        .in-progress {
+            color: #d29922;
+            animation: pulse 2s infinite;
+        }
+        
+        .pending {
+            color: #8b949e;
+        }
+        
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .tech-item {
+            background-color: #1c2128;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            border: 1px solid #30363d;
+        }
+        
+        .drive-link {
+            display: inline-flex;
+            align-items: center;
+            color: #58a6ff;
+            text-decoration: none;
+            margin-top: 10px;
+            padding: 8px 15px;
+            background-color: #1c2128;
+            border-radius: 6px;
+            transition: background-color 0.3s;
+        }
+        
+        .drive-link:hover {
+            background-color: #2d3743;
+            text-decoration: underline;
+        }
+        
+        .drive-link i {
+            margin-right: 8px;
+        }
+        
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>📊 Project Progress Dashboard</h1>
+        <p>Track the development progress of our team project</p>
+    </div>
+    
+    <h2>👨‍💻 Team Members</h2>
+    <div class="container">
+        <div class="card">
+            <div class="team-member">
+                <img src="https://avatars.githubusercontent.com/u/42001064?v=4" alt="Ahmed Khaled">
+                <div>
+                    <h3>Ahmed Khaled</h3>
+                    <p><a href="https://github.com/AhmedMekheimer" target="_blank">GitHub Profile</a></p>
+                </div>
+            </div>
+            <div class="team-member">
+                <img src="https://avatars.githubusercontent.com/u/42001064?v=4" alt="Mohamed Saeed">
+                <div>
+                    <h3>Mohamed Saeed</h3>
+                    <p><a href="https://github.com/Mohmaed-Saaed" target="_blank">GitHub Profile</a></p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h3>🛠 Tech Stack</h3>
+            <div class="tech-stack">
+                <span class="tech-item">.NET (ASP.NET Core MVC)</span>
+                <span class="tech-item">SQL Server</span>
+                <span class="tech-item">Entity Framework</span>
+                <span class="tech-item">VS2022</span>
+                <span class="tech-item">GitHub</span>
+                <span class="tech-item">Google Drive</span>
+            </div>
+        </div>
+    </div>
+    
+    <h2>🚀 Development Phases</h2>
+    <div class="container">
+        <div class="card">
+            <div class="phase">
+                <h3>Phase One</h3>
+                <a href="https://drive.google.com/drive/folders/1kZgXwLWGEFpQtJhDeq3bleaSgnHeWIl0?usp=drive_link" class="drive-link" target="_blank">
+                    <i class="fab fa-google-drive"></i> View Drive Folder
+                </a>
+                <ul class="task-list">
+                    <li><i class="fas fa-check-circle completed"></i> Requirements & Features Document</li>
+                    <li><i class="fas fa-check-circle completed"></i> ERD Diagram</li>
+                    <li><i class="fas fa-check-circle completed"></i> N-Tier Architecture</li>
+                    <li><i class="fas fa-check-circle completed"></i> Models and Db Migration</li>
+                    <li><i class="fas fa-check-circle completed"></i> Unit Of Work (Repositories in SOLID)</li>
+                    <li><i class="fas fa-check-circle completed"></i> Identity & Admin Areas</li>
+                    <li><i class="fas fa-check-circle completed"></i> Showcase of the site progress so far</li>
+                    <li><i class="fas fa-check-circle completed"></i> Explanation of the ERD diagram</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="phase">
+                <h3>Phase Two</h3>
+                <ul class="task-list">
+                    <li><i class="fas fa-check-circle completed"></i> CRUD for Models (Branch, Items, Item Variants, Each Branchs' Items, Partner, Tax, Discount)</li>
+                    <li><i class="fas fa-check-circle completed"></i> Role-based access control</li>
+                    <li><i class="fas fa-check-circle completed"></i> Point Of Sale interface powered by APIs and AJAX with PDF receipt generation.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <h2>📅 Next Phase</h2>
+    <div class="container">
+        <div class="card">
+            <div class="phase">
+                <h3>Current Progress</h3>
+                <ul class="task-list">
+                    <li><i class="fas fa-check-circle completed"></i> List of Sales Invoices Page</li>
+                    <li><i class="fas fa-sync-alt in-progress"></i> Adding Pagination & Filters for Various Pages</li>
+                    <li><i class="far fa-circle pending"></i> Receive Order from Suppliers Operation</li>
+                    <li><i class="far fa-circle pending"></i> Dashboard Page including Charts & Reports</li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="card">
+            <h3>📈 Progress Summary</h3>
+            <div style="background: #1c2128; padding: 15px; border-radius: 8px; margin-top: 15px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                    <span>Completed:</span>
+                    <span>70%</span>
+                </div>
+                <div style="height: 20px; background: #30363d; border-radius: 10px; overflow: hidden;">
+                    <div style="height: 100%; width: 70%; background: #3fb950; border-radius: 10px;"></div>
+                </div>
+            </div>
+            
+            <div style="margin-top: 20px;">
+                <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                    <i class="fas fa-check-circle completed" style="margin-right: 10px;"></i>
+                    <span>Completed Tasks</span>
+                </div>
+                <div style="display: flex; align-items: center; margin-bottom: 10px;">
+                    <i class="fas fa-sync-alt in-progress" style="margin-right: 10px;"></i>
+                    <span>In Progress</span>
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <i class="far fa-circle pending" style="margin-right: 10px;"></i>
+                    <span>Pending Tasks</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div style="text-align: center; margin-top: 40px; padding: 20px; border-top: 1px solid #30363d; color: #8b949e;">
+        <p>Last Updated: April 2023 | Project Status: Active Development</p>
+    </div>
+</body>
+</html>

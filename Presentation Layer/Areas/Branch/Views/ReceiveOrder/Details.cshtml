@@ -1,0 +1,31 @@
+﻿@model OperationItem
+
+<tr class="animate-row">
+    <input asp-for="Id" type="hidden" value="@Model.Id"/>
+    <td>
+        <select class="form-select itemSelect">
+            <option value="@Model.ItemId">
+                @(Model.Item?.Name ?? "Select an item")
+            </option>
+        </select>
+    </td>
+    
+    <td>
+        <input asp-for="Quantity" class="form-control Quantity" />
+    </td>
+    <td>
+        <input asp-for="BuyingPrice" class="form-control BuyingPrice" />
+    </td>
+    <td>
+        <input asp-for="DiscountRate" class="form-control DiscountRate" />
+    </td>
+    <td>
+        <input asp-for="TotalPrice" class="form-control TotalPrice" disabled />
+    </td>
+    <td>
+
+        <button type="button" class="btn btn-danger delete-row">
+                Delete
+        </button>
+    </td>
+</tr>

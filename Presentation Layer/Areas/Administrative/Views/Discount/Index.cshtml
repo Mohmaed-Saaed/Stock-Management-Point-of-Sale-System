@@ -1,0 +1,345 @@
+﻿@model DiscountsWithFiltersVM
+@if (User.HasClaim("Permission", "Discount.View"))
+{
+
+	<div class="d-flex justify-content-between align-items-center mb-3">
+		<h1 class="mb-0">Discounts</h1>
+		@if (User.HasClaim("Permission", "Discount.Add"))
+		{
+			<div class="col-md-2 d-flex justify-content-end align-items-center">
+				<a asp-action="Save" class="btn btn-primary">Add</a>
+			</div>
+		}
+	</div>
+
+	<!-- Search and Filters Section -->
+	<div class="card mb-3 compact-filter-card">
+		<div class="card-body compact-filter-body">
+			<form asp-controller="Discount" asp-action="Index" method="get" class="row g-2 align-items-center">
+				<!-- Search -->
+				<div class="col-md-4">
+					<div class="table-search-wrapper">
+						<input asp-for="Search" class="form-control form-control-sm" placeholder="Search by Name ..." />
+						<button type="submit" class="btn btn-sm btn-primary">
+							<i class="fa fa-search"></i>
+						</button>
+					</div>
+				</div>
+				<input type="hidden" asp-for="PageId" value="1" />
+				<input type="hidden" asp-for="SortBy" value="@Model.SortBy" />
+
+				<!-- Rate Filter -->
+				<div class="col-md-2">
+					<input asp-for="MinRate" type="number" min="0" class="form-control form-control-sm" placeholder="Min Rate" />
+				</div>
+
+				<!-- Status Filter -->
+				<div class="col-md-2">
+					<select class="form-select form-select-sm" asp-for="IsActiveFilter">
+						<option value="">All Statuses</option>
+						<option value="true">Active</option>
+						<option value="false">Expired</option>
+					</select>
+				</div>
+
+				<!-- Exp Date Filter -->
+				<div class="col-md-2">
+					<input asp-for="ExpDateFilter" type="date" class="form-control form-control-sm" />
+				</div>
+
+
+				<!-- Min No. Uses Filter -->
+				<div class="col-md-2">
+					<input asp-for="MinNoUses" type="number" min="0" class="form-control form-control-sm" placeholder="Min No. Uses" />
+				</div>
+
+				<!-- Apply Button -->
+				<div class="col-md-2 d-flex justify-content-end align-items-center">
+					<button type="submit" class="btn btn-sm btn-primary">Apply</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	@if (Model.Discounts.Count == 0)
+	{
+		<h3>No Discounts Found</h3>
+	}
+	else
+	{
+		<div class="table-responsive">
+			<table id="categoryTable" class="table table-striped  table-bordered">
+				<thead class="thead-dark">
+					<tr>
+						<th>
+							Name
+						</th>
+						<th>
+							Rate (%)
+							<a asp-action="Index"
+							   asp-route-SortBy="rate_asc"
+							   asp-route-PageId="1"
+							   asp-route-Search="@Model.Search"
+							   asp-route-MinRate="@Model.MinRate"
+							   asp-route-IsActiveFilter="@Model.IsActiveFilter"
+							   asp-route-ExpDateFilter="@Model.ExpDateFilter"
+							   asp-route-MinNoUses="@Model.MinNoUses" style="color: white;">
+								<i class="fas fa-sort-down"></i>
+							</a>
+							<a asp-action="Index"
+							   asp-route-SortBy="rate_desc"
+							   asp-route-PageId="1"
+							   asp-route-Search="@Model.Search"
+							   asp-route-MinRate="@Model.MinRate"
+							   asp-route-IsActiveFilter="@Model.IsActiveFilter"
+							   asp-route-ExpDateFilter="@Model.ExpDateFilter"
+							   asp-route-MinNoUses="@Model.MinNoUses" style="color: white;">
+								<i class="fas fa-sort-up"></i>
+							</a>
+						</th>
+						<th>
+							Status
+						</th>
+						<th>
+							Expiration Date
+							<a asp-action="Index"
+							   asp-route-SortBy="exp_date_asc"
+							   asp-route-PageId="1"
+							   asp-route-Search="@Model.Search"
+							   asp-route-MinRate="@Model.MinRate"
+							   asp-route-IsActiveFilter="@Model.IsActiveFilter"
+							   asp-route-ExpDateFilter="@Model.ExpDateFilter"
+							   asp-route-MinNoUses="@Model.MinNoUses" style="color: white;">
+								<i class="fas fa-sort-down"></i>
+							</a>
+							<a asp-action="Index"
+							   asp-route-SortBy="exp_date_desc"
+							   asp-route-PageId="1"
+							   asp-route-Search="@Model.Search"
+							   asp-route-MinRate="@Model.MinRate"
+							   asp-route-IsActiveFilter="@Model.IsActiveFilter"
+							   asp-route-ExpDateFilter="@Model.ExpDateFilter"
+							   asp-route-MinNoUses="@Model.MinNoUses" style="color: white;">
+								<i class="fas fa-sort-up"></i>
+							</a>
+						</th>
+						<th data-sort-by="currentUses" class="sortable-header">
+							No. Uses
+							<a asp-action="Index"
+							   asp-route-SortBy="uses_asc"
+							   asp-route-PageId="1"
+							   asp-route-Search="@Model.Search"
+							   asp-route-MinRate="@Model.MinRate"
+							   asp-route-IsActiveFilter="@Model.IsActiveFilter"
+							   asp-route-ExpDateFilter="@Model.ExpDateFilter"
+							   asp-route-MinNoUses="@Model.MinNoUses" style="color: white;">
+								<i class="fas fa-sort-down"></i>
+							</a>
+							<a asp-action="Index"
+							   asp-route-SortBy="uses_desc"
+							   asp-route-PageId="1"
+							   asp-route-Search="@Model.Search"
+							   asp-route-MinRate="@Model.MinRate"
+							   asp-route-IsActiveFilter="@Model.IsActiveFilter"
+							   asp-route-ExpDateFilter="@Model.ExpDateFilter"
+							   asp-route-MinNoUses="@Model.MinNoUses" style="color: white;">
+								<i class="fas fa-sort-up"></i>
+							</a>
+						</th>
+						<th data-sort-by="maximumUses" class="sortable-header">
+							Maximum Uses
+							<a asp-action="Index"
+							   asp-route-SortBy="max_uses_asc"
+							   asp-route-PageId="1"
+							   asp-route-Search="@Model.Search"
+							   asp-route-MinRate="@Model.MinRate"
+							   asp-route-IsActiveFilter="@Model.IsActiveFilter"
+							   asp-route-ExpDateFilter="@Model.ExpDateFilter"
+							   asp-route-MinNoUses="@Model.MinNoUses" style="color: white;">
+								<i class="fas fa-sort-down"></i>
+							</a>
+							<a asp-action="Index"
+							   asp-route-SortBy="max_uses_desc"
+							   asp-route-PageId="1"
+							   asp-route-Search="@Model.Search"
+							   asp-route-MinRate="@Model.MinRate"
+							   asp-route-IsActiveFilter="@Model.IsActiveFilter"
+							   asp-route-ExpDateFilter="@Model.ExpDateFilter"
+							   asp-route-MinNoUses="@Model.MinNoUses" style="color: white;">
+								<i class="fas fa-sort-up"></i>
+							</a>
+						</th>
+						<th>
+							Actions
+						</th>
+
+					</tr>
+				</thead>
+				<tbody>
+					@foreach (var item in Model.Discounts)
+					{
+						<tr>
+							<td>
+								@item.Name
+							</td>
+							<td>
+								@item.Rate
+							</td>
+
+							@if (item.IsActive)
+							{
+								<td>
+									Active
+								</td>
+							}
+							else
+							{
+								<td>
+									Expired
+								</td>
+							}
+
+							@if (item.ExpirationDate is not null)
+							{
+								<td>
+									@item.ExpirationDate
+								</td>
+							}
+							else
+							{
+								<td>
+									Unspecified
+								</td>
+							}
+
+							<td>
+								@item.CurrentUses
+							</td>
+
+							@if (item.MaximumUses != 0)
+							{
+								<td>
+									@item.MaximumUses
+								</td>
+							}
+							else
+							{
+								<td>
+									Unspecified
+								</td>
+							}
+
+							<td>
+								<div class="d-flex gap-2">
+
+									@if (User.HasClaim("Permission", "Discount.Edit"))
+									{
+										<a asp-action="Save" asp-route-id="@item.Id" class="btn btn-sm btn-info">
+											Edit
+										</a>
+									}
+
+									@if (User.HasClaim("Permission", "Discount.Delete"))
+									{
+										<button type="button" class="btn btn-sm btn-danger"
+												data-bs-toggle="modal"
+												data-bs-target="#confirmDeleteModal"
+												data-id="@item.Id"
+												data-name="@item.Name">
+											Delete
+										</button>
+									}
+
+								</div>
+							</td>
+
+						</tr>
+					}
+
+				</tbody>
+			</table>
+		</div>
+	}
+
+	@if (Model.NoPages > 0)
+	{
+		<div class="d-flex justify-content-center">
+			<nav aria-label="Page navigation example">
+				<ul class="pagination custom-pagination mb-0">
+					@if (Model.PageId > 1)
+					{
+						<li class="page-item">
+							<a class="page-link" asp-controller="Discount" asp-action="Index"
+							   asp-route-PageId="@(Model.PageId - 1)"
+							   asp-route-Search="@Model.Search"
+							   asp-route-MinRate="@Model.MinRate"
+							   asp-route-IsActiveFilter="@Model.IsActiveFilter"
+							   asp-route-ExpDateFilter="@Model.ExpDateFilter"
+							   asp-route-MinNoUses="@Model.MinNoUses"
+							   asp-route-SortBy="@Model.SortBy">
+								Previous
+							</a>
+						</li>
+					}
+					@for (int i = 1; i <= Model.NoPages; i++)
+					{
+						<li class="page-item @(i == Model.PageId ? "active" : "")">
+							<a class="page-link"
+							   asp-controller="Discount" asp-action="Index"
+							   asp-route-PageId="@i"
+							   asp-route-Search="@Model.Search"
+							   asp-route-MinRate="@Model.MinRate"
+							   asp-route-IsActiveFilter="@Model.IsActiveFilter"
+							   asp-route-ExpDateFilter="@Model.ExpDateFilter"
+							   asp-route-MinNoUses="@Model.MinNoUses"
+							   asp-route-SortBy="@Model.SortBy">
+								@i
+							</a>
+						</li>
+					}
+					@if (Model.NoPages > Model.PageId)
+					{
+						<li class="page-item">
+							<a class="page-link" asp-controller="Discount" asp-action="Index"
+							   asp-route-PageId="@(Model.PageId + 1)"
+							   asp-route-Search="@Model.Search"
+							   asp-route-MinRate="@Model.MinRate"
+							   asp-route-IsActiveFilter="@Model.IsActiveFilter"
+							   asp-route-ExpDateFilter="@Model.ExpDateFilter"
+							   asp-route-MinNoUses="@Model.MinNoUses"
+							   asp-route-SortBy="@Model.SortBy">
+								Next
+							</a>
+						</li>
+					}
+				</ul>
+			</nav>
+		</div>
+	}
+
+	<partial name="Delete" />
+
+	@section Scripts {
+		<script>
+			$('#confirmDeleteModal').on('show.bs.modal', function (event) {
+				var button = $(event.relatedTarget);
+
+				var Id = button.data('id');
+				var Name = button.data('name');
+
+				$(this).find('#Name').text(Name);
+				$(this).find('#IdToDelete').val(Id);
+			});
+
+			$('#confirmDeleteButton').on('click', function () {
+				$('#deleteUser').submit();
+			});
+		</script>
+	}
+
+	@section Styles {
+		<link href="~/css/salesinv.css" rel="stylesheet" />
+		<link href="~/css/pagination.css" rel="stylesheet" />
+		<link href="~/css/tableStyling.css" rel="stylesheet" />
+	}
+}

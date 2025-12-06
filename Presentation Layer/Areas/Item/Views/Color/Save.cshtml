@@ -1,0 +1,144 @@
+﻿@model ItemVariantVM<Color>
+
+<div class="container">
+	<div class="card shadow-lg border-0 rounded-4">
+		<div class="card-body p-4">
+			@if (Model.ItemVariant.Id == 0)
+			{
+				<h4 class="mb-4">Add Color</h4>
+			}
+			else
+			{
+				<h4 class="mb-4">Edit Color</h4>
+			}
+
+			<form asp-action="Save" method="post" enctype="multipart/form-data">
+				<div class="row">
+					<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+					<input asp-for="ItemVariant.Id" type="hidden" value="@Model.ItemVariant.Id" />
+
+					<div class="mb-3 col-3">
+						<!-- Color Name -->
+						<label asp-for="ItemVariant.Name" class="control-label">Color Name</label>
+						<input asp-for="ItemVariant.Name" class="form-control" />
+						<span asp-validation-for="ItemVariant.Name" class="text-danger"></span>
+
+						<!-- Existing Image (only in Edit) -->
+						@if (Model.ItemVariant.Id != 0 && !string.IsNullOrEmpty(Model.ItemVariant.Image))
+						{
+							<div class="form-group mb-3 col-12">
+								<label class="form-label">Existing Image</label>
+								<div class="position-relative d-inline-block" id="existingImageWrapper">
+									<img src="~/Images/@Model.ItemVariant.Image"
+										 alt="@Model.ItemVariant.Image"
+										 class="img-thumbnail"
+										 style="max-height:150px;">
+
+									<!-- Delete/Undo Button -->
+									<button type="button" class="btn btn-danger btn-sm position-absolute top-0 end-0"
+											onclick="toggleExistingImage(this)">
+										&times;
+									</button>
+
+									<!-- Hidden field to flag deletion -->
+									<input type="hidden" id="DeleteImage" name="deleteImage" value="false" />
+								</div>
+							</div>
+						}
+
+						<!-- Upload New Image -->
+						<div class="form-group mb-3 col-12">
+							<label class="form-label">
+								@(Model.ItemVariant.Id == 0 ? "Upload Image" : "Upload New Image")
+							</label>
+							<input type="file" class="form-control" accept="image/*" name="formFile" onchange="previewNewImage(event)">
+
+							<!-- Preview new image -->
+							<div id="newImagePreview" class="mt-2"></div>
+						</div>
+
+						@if (User.HasClaim("Permission", "Color.Add"))
+						{
+							<div class="form-actions mt-3">
+								<button type="submit" class="btn btn-primary btn-sm">Submit</button>
+							</div>
+						}
+					</div>
+
+				</div>
+
+			</form>
+		</div>
+	</div>
+
+</div>
+
+@section Scripts {
+	@{
+		await Html.RenderPartialAsync("_ValidationScriptsPartial");
+	}
+
+	<script>
+		// Toggle delete/undo for existing image
+		function toggleExistingImage(button) {
+			const container = document.getElementById("existingImageWrapper");
+			const hiddenInput = document.getElementById("DeleteImage");
+
+			if (hiddenInput.value === "false") {
+				// Mark for deletion
+				hiddenInput.value = "true";
+				container.style.opacity = "0.5";
+				button.textContent = "Undo";
+				button.classList.remove("btn-danger");
+				button.classList.add("btn-secondary");
+			} else {
+				// Undo deletion
+				hiddenInput.value = "false";
+				container.style.opacity = "1";
+				button.innerHTML = "&times;";
+				button.classList.remove("btn-secondary");
+				button.classList.add("btn-danger");
+			}
+		}
+
+		// Preview newly uploaded image
+		function previewNewImage(event) {
+			const input = event.target;
+			const previewContainer = document.getElementById("newImagePreview");
+
+			previewContainer.innerHTML = ""; // Clear old preview
+
+			if (input.files && input.files[0]) {
+				const file = input.files[0];
+				if (!file.type.match("image.*")) return;
+
+				const reader = new FileReader();
+				reader.onload = function (e) {
+					const img = document.createElement("img");
+					img.src = e.target.result;
+					img.className = "img-thumbnail";
+					img.style.maxHeight = "150px";
+
+					// Remove button for new preview
+					const wrapper = document.createElement("div");
+					wrapper.className = "position-relative d-inline-block";
+
+					const removeBtn = document.createElement("button");
+					removeBtn.innerHTML = "&times;";
+					removeBtn.className = "btn btn-danger btn-sm position-absolute top-0 end-0";
+					removeBtn.style.transform = "translate(50%,-50%)";
+					removeBtn.onclick = () => {
+						input.value = ""; // clear file input
+						previewContainer.innerHTML = "";
+					};
+
+					wrapper.appendChild(img);
+					wrapper.appendChild(removeBtn);
+					previewContainer.appendChild(wrapper);
+				};
+				reader.readAsDataURL(file);
+			}
+		}
+	</script>
+}

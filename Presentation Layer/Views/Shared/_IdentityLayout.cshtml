@@ -1,0 +1,71 @@
+﻿@{
+    Layout = null;
+    var title = ViewData["Title"] as string ?? "Login";
+}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>@title</title>
+
+    <link href="~/css/nucleo-icons.css" rel="stylesheet" />
+    <link href="~/css/nucleo-svg.css" rel="stylesheet" />
+    <link href="~/css/toastr.min.css" rel="stylesheet" />
+    <link id="pagestyle" href="~/css/material-dashboard.css?v=3.2.0" rel="stylesheet" />
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"
+          crossorigin="anonymous" referrerpolicy="no-referrer" />
+    @RenderSection("Head", required: false)
+</head>
+<body class="bg-gray-200">
+    <main class="main-content mt-0">
+        <div class="page-header align-items-start min-vh-100"
+             style="background:gray">
+            <span class="mask bg-gradient-dark opacity-6"></span>
+
+            <div class="container my-auto">
+                <div class="row justify-content-center">
+                    <div class="col-lg-5 col-md-7 col-sm-10 col-12">
+                        <div class="card z-index-0 fadeIn3 fadeInBottom auth-card">
+                            <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+                                <div class="bg-gradient-dark shadow-dark border-radius-lg py-3 pe-1">
+                                    <h4 class="text-white font-weight-bolder text-center mt-2 mb-0">
+                                        @title
+                                    </h4>
+                                </div>
+                            </div>
+
+                            <div class="card-body">
+                                @RenderBody()
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/material-dashboard.min.js"></script>
+    <script src="~/js/toastr.min.js"></script>
+    <script>
+        @if (TempData["Success"] != null)
+        {
+                    <text>
+                               toastr.success("@TempData["Success"].ToString()");
+                    </text>
+        }
+        @if (TempData["Error"] != null)
+        {
+                    <text>
+                              toastr.error("@TempData["Error"].ToString()");
+                    </text>
+        }
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

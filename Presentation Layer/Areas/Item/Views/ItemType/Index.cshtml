@@ -1,0 +1,166 @@
+﻿@model List<ItemTypeNodeVM>
+@{
+    ViewData["Title"] = "Item Types";
+}
+
+@if (User.HasClaim("Permission", "ItemType.View"))
+{
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h2 class="mb-0">Item Types</h2>
+        @if (User.HasClaim("Permission", "ItemType.Add"))
+        {
+            <a asp-action="Create" class="btn btn-success" title="Add a root (most parent) item type">
+                Add Root Type
+            </a>
+        }
+    </div>
+
+    <ul id="tree" class="list-unstyled">
+        @foreach (var node in Model)
+        {
+            <li data-id="@node.Id">
+                <div class="d-flex align-items-center gap-2 py-1">
+                    @if (node.HasChildren)
+                    {
+                        <button type="button"
+                                class="btn btn-sm btn-outline-secondary js-expand"
+                                data-id="@node.Id" data-loaded="false" aria-label="Expand">
+                            ▸
+                        </button>
+                    }
+                    else
+                    {
+                        <span class="ms-4"></span>
+                    }
+
+                    <span>@node.Name</span>
+
+                    <span class="ms-auto">
+                        @if (User.HasClaim("Permission", "ItemType.Add"))
+                        {
+                            <a asp-action="Create" asp-route-parentId="@node.Id" class="btn btn-sm btn-success">Add</a>
+                        }
+                        @if (User.HasClaim("Permission", "ItemType.Edit"))
+                        {
+                            <a asp-action="Edit" asp-route-id="@node.Id" class="btn btn-sm btn-primary">Edit</a>
+                        }
+                        @if (User.HasClaim("Permission", "ItemType.Delete"))
+                        {
+                            <form asp-action="Delete" asp-route-id="@node.Id" method="post" class="d-inline"
+                                  onsubmit="return confirm('Delete this type and ALL its children?');">
+                                <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+                            </form>
+                        }
+                    </span>
+                </div>
+                <ul class="children list-unstyled ms-4 d-none"></ul>
+            </li>
+        }
+    </ul>
+
+    @section Scripts {
+        <script>
+            // Helper functions for sessionStorage
+            const getExpandedNodes = () => {
+                const expanded = sessionStorage.getItem('expandedItemTypeNodes');
+                return expanded ? JSON.parse(expanded) : [];
+            };
+
+            const setExpandedNodes = (ids) => {
+                sessionStorage.setItem('expandedItemTypeNodes', JSON.stringify(ids));
+            };
+
+            const addExpandedNode = (id) => {
+                const ids = getExpandedNodes();
+                if (!ids.includes(id)) {
+                    ids.push(id);
+                    setExpandedNodes(ids);
+                }
+            };
+
+            const removeExpandedNode = (id) => {
+                const ids = getExpandedNodes();
+                const index = ids.indexOf(id);
+                if (index > -1) {
+                    ids.splice(index, 1);
+                    setExpandedNodes(ids);
+                }
+            };
+
+            // Function to expand a node and load its children if needed
+            const expandNode = async (btn) => {
+                const li = btn.closest('li');
+                const ul = li.querySelector('ul.children');
+                const id = parseInt(btn.dataset.id);
+
+                if (btn.dataset.loaded === 'true') {
+                    // Already loaded, just toggle visibility
+                    ul.classList.remove('d-none');
+                    btn.textContent = '▾';
+                    addExpandedNode(id);
+                } else {
+                    // Load children via AJAX
+                    const url = '@Url.Action("Children", "ItemType")' + '?id=' + encodeURIComponent(id);
+                    const resp = await fetch(url, { headers: { 'X-Requested-With': 'XMLHttpRequest' } });
+                    if (!resp.ok) {
+                        alert('Failed to load children.');
+                        return;
+                    }
+                    ul.innerHTML = await resp.text();
+                    ul.classList.remove('d-none');
+                    btn.dataset.loaded = 'true';
+                    btn.textContent = '▾';
+                    addExpandedNode(id);
+
+                    // Check if any children need to be expanded
+                    const expandedNodes = getExpandedNodes();
+                    ul.querySelectorAll('li[data-id]').forEach(childLi => {
+                        const childId = parseInt(childLi.dataset.id);
+                        if (expandedNodes.includes(childId)) {
+                            const childBtn = childLi.querySelector('.js-expand');
+                            if (childBtn) {
+                                expandNode(childBtn); // Recursively expand children
+                            }
+                        }
+                    });
+                }
+            };
+
+            // Function to collapse a node
+            const collapseNode = (btn) => {
+                const li = btn.closest('li');
+                const ul = li.querySelector('ul.children');
+                ul.classList.add('d-none');
+                btn.textContent = '▸';
+                removeExpandedNode(parseInt(btn.dataset.id));
+            };
+
+            // Event listener for expand/collapse buttons
+            document.addEventListener('click', async (e) => {
+                const btn = e.target.closest('.js-expand');
+                if (!btn) return;
+
+                const ul = btn.closest('li').querySelector('ul.children');
+                if (ul.classList.contains('d-none')) {
+                    await expandNode(btn);
+                } else {
+                    collapseNode(btn);
+                }
+            });
+
+            // Restore expanded state on page load
+            document.addEventListener('DOMContentLoaded', () => {
+                const expandedNodes = getExpandedNodes();
+                expandedNodes.forEach(id => {
+                    const li = document.querySelector(`li[data-id="${id}"]`);
+                    if (li) {
+                        const btn = li.querySelector('.js-expand');
+                        if (btn) {
+                            expandNode(btn);
+                        }
+                    }
+                });
+            });
+        </script>
+    }
+}

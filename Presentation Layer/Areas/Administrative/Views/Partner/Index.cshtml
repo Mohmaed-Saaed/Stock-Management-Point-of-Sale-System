@@ -1,0 +1,178 @@
+﻿@model PartnersWithFiltersVM
+
+@if (User.HasClaim("Permission", "Partner.View"))
+{
+
+
+	<div class="p-3">
+
+		<div class="d-flex justify-content-between align-items-center mb-3">
+			<h1 class="mb-0">Partners</h1>
+
+			<!-- Centered search bar -->
+			<form asp-controller="Partner" asp-action="Index" method="get" class="row g-2 align-items-center" style="margin-top: 0px !important;">
+				<!-- Search -->
+				<div style="margin-top: 0px !important;">
+					<div class="table-search-wrapper" style="width:400px;">
+						<input asp-for="Search" class="form-control form-control-sm" placeholder="Search by Name, Email, or Phone No..." />
+						<input type="hidden" asp-for="partnerType" />
+						<input type="hidden" asp-for="PageId" value="1" />
+						<button type="submit" class="btn btn-sm btn-primary">
+							<i class="fa fa-search"></i>
+						</button>
+					</div>
+				</div>
+			</form>
+
+			@if (User.HasClaim("Permission", "Partner.Add"))
+			{
+				<div class="col-md-2 d-flex justify-content-end align-items-center">
+					<a asp-action="Save" class="btn btn-primary">Add</a>
+				</div>
+			}
+		</div>
+		@if (Model.Partners.Count == 0)
+		{
+			<h3>No Partners Found</h3>
+		}
+		else
+		{
+			<div class="table-responsive">
+				<table id="categoryTable" class="table table-striped  table-bordered">
+					<thead class="thead-dark">
+						<tr>
+							<th width="20%">
+								Name
+							</th>
+							<th width="20%">
+								Email
+							</th>
+							<!-- Add this form around the dropdown -->
+							<th width="20%">
+								<form id="partnerTypeForm" asp-controller="Partner" asp-action="Index" method="get">
+									<select asp-for="partnerType" asp-items="Model.PartnerTypes" class="form-select form-select-sm" onchange="this.form.submit()">
+										<option value="">All Partners</option>
+									</select>
+									<!-- Preserve other filter values -->
+									<input type="hidden" asp-for="Search" />
+									<input type="hidden" asp-for="PageId" value="1" />
+								</form>
+							</th>
+							<th width="20%">
+								Phone number
+							</th>
+							<th width="15%">Actions</th>
+
+						</tr>
+					</thead>
+					<tbody>
+						@foreach (var item in Model.Partners)
+						{
+							<tr>
+								<td>
+									@item.Name
+								</td>
+								<td>
+									@item.Email
+								</td>
+								<td>
+									@(item.partnerType == PartnerType.Supplier ? "Supplier" : item.partnerType == PartnerType.RetailCustomer ? "Customer" : "Customer")
+								</td>
+								<td>
+									@item.PhoneNumber
+								</td>
+								@if ((item.partnerType == PartnerType.RetailCustomer || item.partnerType == PartnerType.Supplier) && item.Id != 1)
+								{
+									<td>
+										<div class="d-flex gap-2">
+											@if (User.HasClaim("Permission", "Partner.Edit"))
+											{
+												<a asp-action="Save" asp-route-id="@item.Id" class="btn btn-sm btn-info">Edit</a>
+											}
+
+
+											@if (User.Identity.Name != item.Name && User.HasClaim("Permission", "Partner.Edit"))
+											{
+												<button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-id="@item.Id" data-name="@item.Name">Delete</button>
+
+											}
+										</div>
+									</td>
+								}
+							</tr>
+						}
+					</tbody>
+				</table>
+			</div>
+		}
+	</div>
+
+	@if (Model.NoPages > 0)
+	{
+		<div class="d-flex justify-content-center">
+			<nav aria-label="Page navigation example">
+				<ul class="pagination custom-pagination mb-0">
+					@if (Model.PageId > 1)
+					{
+						<li class="page-item">
+							<a class="page-link" asp-controller="Partner" asp-action="Index"
+							   asp-route-PageId="@(Model.PageId - 1)"
+							   asp-route-Search="@Model.Search"
+							   asp-route-partnerType="@Model.partnerType">
+								Previous
+							</a>
+						</li>
+					}
+					@for (int i = 1; i <= Model.NoPages; i++)
+					{
+						<li class="page-item @(i == Model.PageId ? "active" : "")">
+							<a class="page-link"
+							   asp-controller="Partner" asp-action="Index"
+							   asp-route-PageId="@i"
+							   asp-route-Search="@Model.Search"
+							   asp-route-partnerType="@Model.partnerType">
+								@i
+							</a>
+						</li>
+					}
+					@if (Model.NoPages > Model.PageId)
+					{
+						<li class="page-item">
+							<a class="page-link" asp-controller="Partner" asp-action="Index"
+							   asp-route-PageId="@(Model.PageId + 1)"
+							   asp-route-Search="@Model.Search"
+							   asp-route-partnerType="@Model.partnerType">
+								Next
+							</a>
+						</li>
+					}
+				</ul>
+			</nav>
+		</div>
+	}
+
+	<partial name="Delete" />
+
+	@section Scripts {
+		<script>
+			$('#confirmDeleteModal').on('show.bs.modal', function (event) {
+				var button = $(event.relatedTarget);
+
+				var Id = button.data('id');
+				var Name = button.data('name');
+
+				$(this).find('#Name').text(Name);
+				$(this).find('#IdToDelete').val(Id);
+			});
+
+			$('#confirmDeleteButton').on('click', function () {
+				$('#deleteUser').submit();
+			});
+		</script>
+	}
+
+	@section Styles {
+		<link href="~/css/tableStyling.css" rel="stylesheet" />
+		<link href="~/css/pagination.css" rel="stylesheet" />
+	}
+}
